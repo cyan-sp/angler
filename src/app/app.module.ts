@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { AerolineasComponent } from './components/aerolineas/aerolineas.component';
 import { CommonComponent } from './components/common/common.component';
 import { NavbarComponent } from './components/common/navbar/navbar.component';
+import { AeropuertosComponent } from './components/aeropuertos/aeropuertos.component';
 // import { NavbarComponent } from './components/common/navbar/navbar.component';
 // import { NavbarComponent } from './components/common/navbar/navbar/navbar.component';
 
@@ -15,6 +16,7 @@ import { NavbarComponent } from './components/common/navbar/navbar.component';
     AerolineasComponent,
     CommonComponent,
     NavbarComponent,
+    AeropuertosComponent,
     // NavbarComponent,
     // NavbarComponent
   ],

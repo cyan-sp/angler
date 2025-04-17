@@ -1,4 +1,4 @@
-<div class="navbar bg-base-100 shadow-sm">
+<div class="navbar bg-cyan-100 shadow-sm">
   <!-- Mobile menu (visible on small screens) -->
   <div class="navbar-start">
     <div class="dropdown">
@@ -8,31 +8,31 @@
       <ul
         tabindex="0"
         class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-        <li><a routerLink="/aerolineas">Aerolineas</a></li>
-        <li><a routerLink="/aeropuertos">Aeropuerto</a></li>
-        <li><a routerLink="/aviones">Aviones</a></li>
-        <li><a routerLink="/vuelos">Vuelos</a></li>
+        <li><a routerLink="/aerolineas" routerLinkActive="active">Aerolineas</a></li>
+        <li><a routerLink="/aeropuertos" routerLinkActive="active">Aeropuerto</a></li>
+        <li><a routerLink="/aviones" routerLinkActive="active">Aviones</a></li>
+        <li><a routerLink="/vuelos" routerLinkActive="active">Vuelos</a></li>
       </ul>
     </div>
-    <a class="btn btn-ghost text-xl">Angler Airlines</a>
+    <a class="btn btn-ghost text-xl" routerLink="/">Angler Airlines</a>
   </div>
 
   <!-- Desktop menu (hidden on small screens, visible on large screens) -->
   <div class="navbar-center hidden lg:flex">
     <ul class="menu menu-horizontal px-1">
-      <li><a routerLink="/aerolineas">Aerolineas</a></li>
-      <li><a routerLink="/aeropuertos">Aeropuerto</a></li>
-      <li><a routerLink="/aviones">Aviones</a></li>
-      <li><a routerLink="/vuelos">Vuelos</a></li>
+      <li><a routerLink="/aerolineas" routerLinkActive="active">Aerolineas</a></li>
+      <li><a routerLink="/aeropuertos" routerLinkActive="active">Aeropuerto</a></li>
+      <li><a routerLink="/aviones" routerLinkActive="active">Aviones</a></li>
+      <li><a routerLink="/vuelos" routerLinkActive="active">Vuelos</a></li>
     </ul>
   </div>
 
-  <!-- Right-side elements -->
+  <!-- Right-side elements with horizontal dots -->
   <div class="navbar-end">
     <div class="dropdown dropdown-end">
       <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
         </svg>
       </div>
       <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
