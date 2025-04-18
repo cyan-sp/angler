@@ -1,28 +1,28 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { AerolineasComponent } from './components/aerolineas/aerolineas.component';
+// Remove AerolineasComponent from here since it's standalone
 import { CommonComponent } from './components/common/common.component';
 import { NavbarComponent } from './components/common/navbar/navbar.component';
-import { AeropuertosComponent } from './components/aeropuertos/aeropuertos.component';
-// import { NavbarComponent } from './components/common/navbar/navbar.component';
-// import { NavbarComponent } from './components/common/navbar/navbar/navbar.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    AerolineasComponent,
+    // Remove AerolineasComponent from here
     CommonComponent,
     NavbarComponent,
-    AeropuertosComponent,
-    // NavbarComponent,
-    // NavbarComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule,
+    FormsModule,
+    ReactiveFormsModule,
+    // You don't need to import standalone components here either
   ],
   providers: [],
   bootstrap: [AppComponent]

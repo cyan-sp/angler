@@ -1,20 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AerolineasComponent } from './components/aerolineas/aerolineas.component';
-import { AeropuertosComponent} from './components/aeropuertos/aeropuertos.component';
-
 
 const routes: Routes = [
-  { path: 'aerolineas', component: AerolineasComponent },
-  { path: '', redirectTo: '/aerolineas', pathMatch: 'full' }, // Default route redirects to aerolineas
-  // Leave these commented until you create the components
-  { path: 'aeropuertos', component: AeropuertosComponent },
-  // { path: 'aviones', component: AvionesComponent },
-  // { path: 'vuelos', component: VuelosComponent },
+  { path: '', redirectTo: '/aerolineas', pathMatch: 'full' },
+  { path: 'aerolineas', component: AerolineasComponent }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { enableTracing: true })], // enableTracing helps debug routing issues
+  imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
