@@ -15,7 +15,8 @@ export interface Aerolinea {
     providedIn: 'root'
 })
 export class AerolineaService {
-    private apiUrl = 'http://localhost:8080/api/v1/aerolineas';
+  // src/app/services/aerolineas.service.ts
+  private apiUrl = '/api/aerolineas';  // Instead of http://localhost:8090/api/aerolineas
 
     constructor(private http: HttpClient) { }
 
