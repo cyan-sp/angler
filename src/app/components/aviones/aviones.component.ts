@@ -145,6 +145,7 @@ export class AvionesComponent implements OnInit {
     (this.editModal.nativeElement as HTMLDialogElement).close();
   }
 
+  // In aviones.component.ts
   saveAvion(): void {
     this.logFormState(); // Debug current form state
 
@@ -152,13 +153,16 @@ export class AvionesComponent implements OnInit {
       const formData = this.formatFormData(this.avionForm.value);
 
       console.log('Sending to API for update:', formData);
+      console.log('Selected plane ID:', this.selectedAvion.id);
 
       this.avionesService.updateAvion(this.selectedAvion.id!, formData).subscribe({
-        next: () => {
+        next: (response) => {
+          console.log('Update successful:', response);
           this.loadAviones();
           this.closeEditModal();
         },
         error: (err) => {
+          console.error('Update error details:', err);
           let errorMsg = 'Error updating plane: ';
           if (err.error && typeof err.error === 'object') {
             const errorDetails = Object.values(err.error).join(', ');
@@ -167,7 +171,6 @@ export class AvionesComponent implements OnInit {
             errorMsg += err.message;
           }
           this.error = errorMsg;
-          console.error('Error updating plane', err);
         }
       });
     } else {
@@ -273,6 +276,7 @@ export class AvionesComponent implements OnInit {
   }
 
   // Helper method to format data before sending to API
+  // In aviones.component.ts
   private formatFormData(formValue: any): any {
     // Convert numeric values
     const num_registro = typeof formValue.num_registro === 'string'
@@ -287,12 +291,21 @@ export class AvionesComponent implements OnInit {
       ? parseInt(formValue.estatus, 10)
       : formValue.estatus;
 
-    return {
+    // Create the proper structure for API
+    const result = {
       ...formValue,
       num_registro,
       capacidad,
-      estatus
+      estatus,
+      aerolinea: {
+        id: formValue.aerolineaId
+      }
     };
+
+    // Remove aerolineaId as it's now in the aerolinea object
+    delete result.aerolineaId;
+
+    return result;
   }
 
   // Helper method to mark all form controls as touched

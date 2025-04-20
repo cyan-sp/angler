@@ -1,6 +1,8 @@
+// src/app/services/aviones.service.ts
+
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, throwError } from 'rxjs';
+import { Observable, catchError, throwError} from 'rxjs';
 import { Avion } from '../models/Avion.model';
 
 @Injectable({
@@ -41,7 +43,9 @@ export class AvionesService {
       );
   }
 
+  // Changed from PUT to POST
   updateAvion(id: number, avion: Avion): Observable<Avion> {
+    console.log(`Sending PUT to update plane ID ${id}:`, avion); // Debug log
     return this.http.put<Avion>(`${this.apiUrl}/${id}`, avion)
       .pipe(
         catchError(error => {
