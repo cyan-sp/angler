@@ -1,0 +1,358 @@
+<div class="container mx-auto p-4">
+  <h1 class="text-3xl font-bold mb-6">Planes List</h1>
+
+  <!-- Debug Information -->
+  <div class="mb-4 p-4 bg-gray-100 rounded">
+    <h3 class="font-bold mb-2">Debug Info:</h3>
+    <button (click)="logFormState()" class="btn btn-sm btn-secondary">Log Form State</button>
+    <div *ngIf="Object.keys(formErrors).length > 0" class="mt-2">
+      <p class="font-bold">Form Errors:</p>
+      <ul>
+        <li *ngFor="let err of getFormValidationErrors() | keyvalue">
+          {{ err.key }}: {{ JSON.stringify(err.value) }}
+        </li>
+      </ul>
+    </div>
+    <div *ngIf="aerolineas.length === 0" class="text-red-500 mt-2">
+      Warning: No airlines loaded!
+    </div>
+  </div>
+
+  <!-- Action buttons -->
+  <div class="mb-4">
+    <button (click)="openNewAvionModal()" class="btn btn-primary">Add New Plane</button>
+  </div>
+
+  <!-- Loading indicator -->
+  <div *ngIf="loading" class="flex justify-center my-8">
+    <div class="loading loading-spinner loading-lg"></div>
+  </div>
+
+  <!-- Error message -->
+  <div *ngIf="error" class="alert alert-error mb-4">
+    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+    <span>{{ error }}</span>
+  </div>
+
+  <!-- Planes list -->
+  <div *ngIf="!loading && !error && aviones.length > 0">
+    <div class="overflow-x-auto">
+      <table class="table w-full">
+        <thead>
+        <tr>
+          <th class="bg-primary text-primary-content">ID</th>
+          <th class="bg-primary text-primary-content">Registration</th>
+          <th class="bg-primary text-primary-content">Type</th>
+          <th class="bg-primary text-primary-content">Model</th>
+          <th class="bg-primary text-primary-content">Capacity</th>
+          <th class="bg-primary text-primary-content">Airline</th>
+          <th class="bg-primary text-primary-content">Departure Date</th>
+          <th class="bg-primary text-primary-content">Status</th>
+          <th class="bg-primary text-primary-content">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let avion of aviones" class="hover">
+          <td>{{ avion.id }}</td>
+          <td>{{ avion.num_registro }}</td>
+          <td>{{ avion.tipo }}</td>
+          <td>{{ avion.codigo_modelo }}</td>
+          <td>{{ avion.capacidad }}</td>
+          <td>{{ avion.aerolinea?.nombre || 'No airline' }}</td>
+          <td>{{ avion.fecha_salida | date:'mediumDate' }}</td>
+          <td>
+            <span *ngIf="avion.estatus === 1" class="badge badge-success">Active</span>
+            <span *ngIf="avion.estatus === 2" class="badge badge-error">Inactive</span>
+          </td>
+          <td class="flex gap-2">
+            <button (click)="openViewModal(avion)" class="btn btn-sm btn-info">View</button>
+            <button (click)="openEditModal(avion)" class="btn btn-sm btn-warning">Edit</button>
+            <button (click)="openDeleteModal(avion)" class="btn btn-sm btn-error">Delete</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- No planes message -->
+  <div *ngIf="!loading && !error && aviones.length === 0" class="alert alert-info">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+    <span>No planes found.</span>
+  </div>
+</div>
+
+<!-- View Modal -->
+<dialog #viewModal class="modal">
+  <div class="modal-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <h3 class="font-bold text-lg">Plane Details</h3>
+    <div *ngIf="selectedAvion" class="py-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div><strong>ID:</strong></div>
+        <div>{{ selectedAvion.id }}</div>
+
+        <div><strong>Registration Number:</strong></div>
+        <div>{{ selectedAvion.num_registro }}</div>
+
+        <div><strong>Type:</strong></div>
+        <div>{{ selectedAvion.tipo }}</div>
+
+        <div><strong>Model Code:</strong></div>
+        <div>{{ selectedAvion.codigo_modelo }}</div>
+
+        <div><strong>Capacity:</strong></div>
+        <div>{{ selectedAvion.capacidad }}</div>
+
+        <div><strong>Airline:</strong></div>
+        <div>{{ selectedAvion.aerolinea?.nombre || 'No airline' }}</div>
+
+        <div><strong>Departure Date:</strong></div>
+        <div>{{ selectedAvion.fecha_salida | date:'mediumDate' }}</div>
+
+        <div><strong>Status:</strong></div>
+        <div>
+          <span *ngIf="selectedAvion.estatus === 1" class="badge badge-success">Active</span>
+          <span *ngIf="selectedAvion.estatus === 2" class="badge badge-error">Inactive</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-action">
+      <form method="dialog">
+        <button class="btn">Close</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<!-- Edit Modal -->
+<dialog #editModal class="modal">
+  <div class="modal-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <h3 class="font-bold text-lg">Edit Plane</h3>
+    <form [formGroup]="avionForm" (ngSubmit)="saveAvion()" class="py-4">
+      <!-- Form validation debug -->
+      <div *ngIf="avionForm.invalid" class="alert alert-warning mb-4">
+        <p>Form has validation errors:</p>
+        <pre>{{ formErrors | json }}</pre>
+      </div>
+
+      <div class="form-control w-full">
+        <label class="label">
+          <span class="label-text">Registration Number</span>
+        </label>
+        <input type="number" formControlName="num_registro" placeholder="Registration Number" class="input input-bordered w-full" />
+        <div *ngIf="avionForm.get('num_registro')?.invalid && avionForm.get('num_registro')?.touched" class="text-error text-sm mt-1">
+          Registration number is required
+        </div>
+      </div>
+
+      <div class="form-control w-full mt-2">
+        <label class="label">
+          <span class="label-text">Type</span>
+        </label>
+        <input type="text" formControlName="tipo" placeholder="Type" class="input input-bordered w-full" />
+        <div *ngIf="avionForm.get('tipo')?.invalid && avionForm.get('tipo')?.touched" class="text-error text-sm mt-1">
+          Type is required
+        </div>
+      </div>
+
+      <div class="form-control w-full mt-2">
+        <label class="label">
+          <span class="label-text">Model Code</span>
+        </label>
+        <input type="text" formControlName="codigo_modelo" placeholder="Model Code" class="input input-bordered w-full" />
+        <div *ngIf="avionForm.get('codigo_modelo')?.invalid && avionForm.get('codigo_modelo')?.touched" class="text-error text-sm mt-1">
+          Model code is required
+        </div>
+      </div>
+
+      <div class="form-control w-full mt-2">
+        <label class="label">
+          <span class="label-text">Capacity</span>
+        </label>
+        <input type="number" formControlName="capacidad" placeholder="Capacity" class="input input-bordered w-full" />
+        <div *ngIf="avionForm.get('capacidad')?.invalid && avionForm.get('capacidad')?.touched" class="text-error text-sm mt-1">
+          Capacity is required and must be a positive number
+        </div>
+      </div>
+
+      <div class="form-control w-full mt-2">
+        <label class="label">
+          <span class="label-text">Airline</span>
+        </label>
+        <select formControlName="aerolineaId" class="select select-bordered w-full">
+          <option [ngValue]="null" disabled>Select an airline</option>
+          <option *ngFor="let aerolinea of aerolineas" [ngValue]="aerolinea.id">{{ aerolinea.nombre }}</option>
+        </select>
+        <div *ngIf="avionForm.get('aerolineaId')?.invalid && avionForm.get('aerolineaId')?.touched" class="text-error text-sm mt-1">
+          Airline is required
+        </div>
+        <div *ngIf="aerolineas.length === 0" class="text-warning text-sm mt-1">
+          Warning: No airlines are available to select!
+        </div>
+      </div>
+
+      <div class="form-control w-full mt-2">
+        <label class="label">
+          <span class="label-text">Departure Date</span>
+        </label>
+        <input type="date" formControlName="fecha_salida" class="input input-bordered w-full" />
+        <div *ngIf="avionForm.get('fecha_salida')?.invalid && avionForm.get('fecha_salida')?.touched" class="text-error text-sm mt-1">
+          Departure date is required
+        </div>
+      </div>
+
+      <div class="form-control w-full mt-2">
+        <label class="label">
+          <span class="label-text">Status</span>
+        </label>
+        <select formControlName="estatus" class="select select-bordered w-full">
+          <option [ngValue]="1">Active</option>
+          <option [ngValue]="2">Inactive</option>
+        </select>
+      </div>
+
+      <div class="modal-action">
+        <!-- Remove disabled attribute for testing -->
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <button type="button" class="btn" (click)="closeEditModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<!-- New Plane Modal -->
+<dialog #newAvionModal class="modal">
+  <div class="modal-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <h3 class="font-bold text-lg">Add New Plane</h3>
+    <form [formGroup]="avionForm" (ngSubmit)="saveNewAvion()" class="py-4">
+      <!-- Form validation debug -->
+      <div *ngIf="avionForm.invalid" class="alert alert-warning mb-4">
+        <p>Form has validation errors:</p>
+        <pre>{{ formErrors | json }}</pre>
+      </div>
+
+      <div class="form-control w-full">
+        <label class="label">
+          <span class="label-text">Registration Number</span>
+        </label>
+        <input type="number" formControlName="num_registro" placeholder="Registration Number" class="input input-bordered w-full" />
+        <div *ngIf="avionForm.get('num_registro')?.invalid && avionForm.get('num_registro')?.touched" class="text-error text-sm mt-1">
+          Registration number is required
+        </div>
+      </div>
+
+      <div class="form-control w-full mt-2">
+        <label class="label">
+          <span class="label-text">Type</span>
+        </label>
+        <input type="text" formControlName="tipo" placeholder="Type" class="input input-bordered w-full" />
+        <div *ngIf="avionForm.get('tipo')?.invalid && avionForm.get('tipo')?.touched" class="text-error text-sm mt-1">
+          Type is required
+        </div>
+      </div>
+
+      <div class="form-control w-full mt-2">
+        <label class="label">
+          <span class="label-text">Model Code</span>
+        </label>
+        <input type="text" formControlName="codigo_modelo" placeholder="Model Code" class="input input-bordered w-full" />
+        <div *ngIf="avionForm.get('codigo_modelo')?.invalid && avionForm.get('codigo_modelo')?.touched" class="text-error text-sm mt-1">
+          Model code is required
+        </div>
+      </div>
+
+      <div class="form-control w-full mt-2">
+        <label class="label">
+          <span class="label-text">Capacity</span>
+        </label>
+        <input type="number" formControlName="capacidad" placeholder="Capacity" class="input input-bordered w-full" />
+        <div *ngIf="avionForm.get('capacidad')?.invalid && avionForm.get('capacidad')?.touched" class="text-error text-sm mt-1">
+          Capacity is required and must be a positive number
+        </div>
+      </div>
+
+      <div class="form-control w-full mt-2">
+        <label class="label">
+          <span class="label-text">Airline</span>
+        </label>
+        <select formControlName="aerolineaId" class="select select-bordered w-full">
+          <option [ngValue]="null" disabled>Select an airline</option>
+          <option *ngFor="let aerolinea of aerolineas" [ngValue]="aerolinea.id">{{ aerolinea.nombre }}</option>
+        </select>
+        <div *ngIf="avionForm.get('aerolineaId')?.invalid && avionForm.get('aerolineaId')?.touched" class="text-error text-sm mt-1">
+          Airline is required
+        </div>
+        <div *ngIf="aerolineas.length === 0" class="text-warning text-sm mt-1">
+          Warning: No airlines are available to select!
+        </div>
+
+        <!-- Debug: Uncomment this to show loaded airlines -->
+        <div class="mt-2 bg-gray-100 p-2 rounded">
+          <p class="font-bold">Debug - Available Airlines:</p>
+          <ul class="text-xs">
+            <li *ngFor="let a of aerolineas">ID: {{ a.id }}, Name: {{ a.nombre }}</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="form-control w-full mt-2">
+        <label class="label">
+          <span class="label-text">Departure Date</span>
+        </label>
+        <input type="date" formControlName="fecha_salida" class="input input-bordered w-full" />
+        <div *ngIf="avionForm.get('fecha_salida')?.invalid && avionForm.get('fecha_salida')?.touched" class="text-error text-sm mt-1">
+          Departure date is required
+        </div>
+      </div>
+
+      <div class="form-control w-full mt-2">
+        <label class="label">
+          <span class="label-text">Status</span>
+        </label>
+        <select formControlName="estatus" class="select select-bordered w-full">
+          <option [ngValue]="1">Active</option>
+          <option [ngValue]="2">Inactive</option>
+        </select>
+      </div>
+
+      <div class="modal-action">
+        <!-- Remove disabled attribute for testing -->
+        <button type="submit" class="btn btn-primary">Create Plane</button>
+        <button type="button" class="btn" (click)="closeNewAvionModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<!-- Delete Confirmation Modal -->
+<dialog #deleteModal class="modal">
+  <div class="modal-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <h3 class="font-bold text-lg">Confirm Delete</h3>
+    <p class="py-4">Are you sure you want to delete the plane with registration <strong>{{ selectedAvion?.num_registro }}</strong>?</p>
+    <div class="modal-action">
+      <button class="btn btn-error" (click)="confirmDelete()">Delete</button>
+      <form method="dialog">
+        <button class="btn">Cancel</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<ng-template #noData>
+  <div class="alert alert-info">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+    <span>No data available.</span>
+  </div>
+</ng-template>
