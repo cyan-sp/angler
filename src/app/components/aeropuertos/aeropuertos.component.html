@@ -1,0 +1,273 @@
+<div class="container mx-auto p-4">
+  <h1 class="text-3xl font-bold mb-6">Airports List</h1>
+
+  <!-- Action buttons -->
+  <div class="mb-4">
+    <button (click)="openNewAirportModal()" class="btn btn-primary">Add New Airport</button>
+  </div>
+
+  <!-- Loading indicator -->
+  <div *ngIf="loading" class="flex justify-center my-8">
+    <div class="loading loading-spinner loading-lg"></div>
+  </div>
+
+  <!-- Error message -->
+  <div *ngIf="error" class="alert alert-error mb-4">
+    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+    <span>{{ error }}</span>
+  </div>
+
+  <!-- Airports list -->
+  <div *ngIf="!loading && !error && aeropuertos.length > 0">
+    <div class="overflow-x-auto">
+      <table class="table w-full">
+        <thead>
+        <tr>
+          <th class="bg-primary text-primary-content">ID</th>
+          <th class="bg-primary text-primary-content">Name</th>
+          <th class="bg-primary text-primary-content">Code</th>
+          <th class="bg-primary text-primary-content">Coordinates</th>
+          <th class="bg-primary text-primary-content">Country</th>
+          <th class="bg-primary text-primary-content">Status</th>
+          <th class="bg-primary text-primary-content">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let aeropuerto of aeropuertos" class="hover">
+          <td>{{ aeropuerto.id }}</td>
+          <td>{{ aeropuerto.nombre }}</td>
+          <td>{{ aeropuerto.codigo }}</td>
+          <td>{{ aeropuerto.latitud }}, {{ aeropuerto.longitud }}</td>
+          <td>{{ aeropuerto.pais }}</td>
+          <td>
+            <span *ngIf="aeropuerto.estatus === 1" class="badge badge-success">Active</span>
+            <span *ngIf="aeropuerto.estatus === 2" class="badge badge-error">Inactive</span>
+          </td>
+          <td class="flex gap-2">
+            <button (click)="openViewModal(aeropuerto)" class="btn btn-sm btn-info">View</button>
+            <button (click)="openEditModal(aeropuerto)" class="btn btn-sm btn-warning">Edit</button>
+            <button (click)="openDeleteModal(aeropuerto)" class="btn btn-sm btn-error">Delete</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- No airports message -->
+  <div *ngIf="!loading && !error && aeropuertos.length === 0" class="alert alert-info">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+    <span>No airports found.</span>
+  </div>
+</div>
+
+<!-- View Modal -->
+<dialog #viewModal class="modal">
+  <div class="modal-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <h3 class="font-bold text-lg">Airport Details</h3>
+    <div *ngIf="selectedAeropuerto" class="py-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div><strong>ID:</strong></div>
+        <div>{{ selectedAeropuerto.id }}</div>
+
+        <div><strong>Name:</strong></div>
+        <div>{{ selectedAeropuerto.nombre }}</div>
+
+        <div><strong>Code:</strong></div>
+        <div>{{ selectedAeropuerto.codigo }}</div>
+
+        <div><strong>Latitude:</strong></div>
+        <div>{{ selectedAeropuerto.latitud }}</div>
+
+        <div><strong>Longitude:</strong></div>
+        <div>{{ selectedAeropuerto.longitud }}</div>
+
+        <div><strong>Country:</strong></div>
+        <div>{{ selectedAeropuerto.pais }}</div>
+
+        <div><strong>Status:</strong></div>
+        <div>
+          <span *ngIf="selectedAeropuerto.estatus === 1" class="badge badge-success">Active</span>
+          <span *ngIf="selectedAeropuerto.estatus === 2" class="badge badge-error">Inactive</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-action">
+      <form method="dialog">
+        <button class="btn">Close</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<!-- Edit Modal -->
+<dialog #editModal class="modal">
+  <div class="modal-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <h3 class="font-bold text-lg">Edit Airport</h3>
+    <form [formGroup]="airportForm" (ngSubmit)="saveAirport()" class="py-4">
+      <div class="form-control w-full">
+        <label class="label">
+          <span class="label-text">Airport Name</span>
+        </label>
+        <input type="text" formControlName="nombre" placeholder="Airport Name" class="input input-bordered w-full" />
+        <div *ngIf="airportForm.get('nombre')?.invalid && airportForm.get('nombre')?.touched" class="text-error text-sm mt-1">
+          Airport name is required
+        </div>
+      </div>
+
+      <div class="form-control w-full mt-2">
+        <label class="label">
+          <span class="label-text">Code</span>
+        </label>
+        <input type="text" formControlName="codigo" placeholder="Airport Code" class="input input-bordered w-full" />
+        <div *ngIf="airportForm.get('codigo')?.invalid && airportForm.get('codigo')?.touched" class="text-error text-sm mt-1">
+          Airport code is required
+        </div>
+      </div>
+
+      <div class="form-control w-full mt-2">
+        <label class="label">
+          <span class="label-text">Latitude</span>
+        </label>
+        <input type="number" step="0.000001" formControlName="latitud" placeholder="Latitude" class="input input-bordered w-full" />
+        <div *ngIf="airportForm.get('latitud')?.invalid && airportForm.get('latitud')?.touched" class="text-error text-sm mt-1">
+          Latitude is required
+        </div>
+      </div>
+
+      <div class="form-control w-full mt-2">
+        <label class="label">
+          <span class="label-text">Longitude</span>
+        </label>
+        <input type="number" step="0.000001" formControlName="longitud" placeholder="Longitude" class="input input-bordered w-full" />
+        <div *ngIf="airportForm.get('longitud')?.invalid && airportForm.get('longitud')?.touched" class="text-error text-sm mt-1">
+          Longitude is required
+        </div>
+      </div>
+
+      <div class="form-control w-full mt-2">
+        <label class="label">
+          <span class="label-text">Country</span>
+        </label>
+        <input type="text" formControlName="pais" placeholder="Country" class="input input-bordered w-full" />
+        <div *ngIf="airportForm.get('pais')?.invalid && airportForm.get('pais')?.touched" class="text-error text-sm mt-1">
+          Country is required
+        </div>
+      </div>
+
+      <div class="form-control w-full mt-2">
+        <label class="label">
+          <span class="label-text">Status</span>
+        </label>
+        <select formControlName="estatus" class="select select-bordered w-full">
+          <option [ngValue]="1">Active</option>
+          <option [ngValue]="2">Inactive</option>
+        </select>
+      </div>
+
+      <div class="modal-action">
+        <button type="submit" class="btn btn-primary" [disabled]="airportForm.invalid">Save Changes</button>
+        <button type="button" class="btn" (click)="closeEditModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<!-- New Airport Modal -->
+<dialog #newAirportModal class="modal">
+  <div class="modal-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <h3 class="font-bold text-lg">Add New Airport</h3>
+    <form [formGroup]="airportForm" (ngSubmit)="saveNewAirport()" class="py-4">
+      <div class="form-control w-full">
+        <label class="label">
+          <span class="label-text">Airport Name</span>
+        </label>
+        <input type="text" formControlName="nombre" placeholder="Airport Name" class="input input-bordered w-full" />
+        <div *ngIf="airportForm.get('nombre')?.invalid && airportForm.get('nombre')?.touched" class="text-error text-sm mt-1">
+          Airport name is required
+        </div>
+      </div>
+
+      <div class="form-control w-full mt-2">
+        <label class="label">
+          <span class="label-text">Code</span>
+        </label>
+        <input type="text" formControlName="codigo" placeholder="Airport Code" class="input input-bordered w-full" />
+        <div *ngIf="airportForm.get('codigo')?.invalid && airportForm.get('codigo')?.touched" class="text-error text-sm mt-1">
+          Airport code is required
+        </div>
+      </div>
+
+      <div class="form-control w-full mt-2">
+        <label class="label">
+          <span class="label-text">Latitude</span>
+        </label>
+        <input type="number" step="0.000001" formControlName="latitud" placeholder="Latitude" class="input input-bordered w-full" />
+        <div *ngIf="airportForm.get('latitud')?.invalid && airportForm.get('latitud')?.touched" class="text-error text-sm mt-1">
+          Latitude is required
+        </div>
+      </div>
+
+      <div class="form-control w-full mt-2">
+        <label class="label">
+          <span class="label-text">Longitude</span>
+        </label>
+        <input type="number" step="0.000001" formControlName="longitud" placeholder="Longitude" class="input input-bordered w-full" />
+        <div *ngIf="airportForm.get('longitud')?.invalid && airportForm.get('longitud')?.touched" class="text-error text-sm mt-1">
+          Longitude is required
+        </div>
+      </div>
+
+      <div class="form-control w-full mt-2">
+        <label class="label">
+          <span class="label-text">Country</span>
+        </label>
+        <input type="text" formControlName="pais" placeholder="Country" class="input input-bordered w-full" />
+        <div *ngIf="airportForm.get('pais')?.invalid && airportForm.get('pais')?.touched" class="text-error text-sm mt-1">
+          Country is required
+        </div>
+      </div>
+
+      <div class="form-control w-full mt-2">
+        <label class="label">
+          <span class="label-text">Status</span>
+        </label>
+        <select formControlName="estatus" class="select select-bordered w-full">
+          <option [ngValue]="1">Active</option>
+          <option [ngValue]="2">Inactive</option>
+        </select>
+      </div>
+
+      <div class="modal-action">
+        <button type="submit" class="btn btn-primary" [disabled]="airportForm.invalid">Create Airport</button>
+        <button type="button" class="btn" (click)="closeNewAirportModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<!-- Delete Confirmation Modal -->
+<dialog #deleteModal class="modal">
+  <div class="modal-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <h3 class="font-bold text-lg">Confirm Delete</h3>
+    <p class="py-4">Are you sure you want to delete the airport <strong>{{ selectedAeropuerto?.nombre }}</strong>?</p>
+    <div class="modal-action">
+      <button class="btn btn-error" (click)="confirmDelete()">Delete</button>
+      <form method="dialog">
+        <button class="btn">Cancel</button>
+      </form>
+    </div>
+  </div>
+</dialog>
